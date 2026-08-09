@@ -8,14 +8,20 @@ model = ChatOpenAI()
 
 st.header("Research Tool")
 
+# User selects the research paper
 paper_input = st.selectbox( "Select Research Paper Name", ["Attention Is All You Need", "BERT: Pre-training of Deep Bidirectional Transformers", "GPT-3: Language Models are Few-Shot Learners", "Diffusion Models Beat GANs on Image Synthesis"] )
 
+# User selects the explanation style
 style_input = st.selectbox( "Select Explanation Style", ["Beginner-Friendly", "Technical", "Code-Oriented", "Mathematical"] ) 
 
+# User selects the explanation length
 length_input = st.selectbox( "Select Explanation Length", ["Short (1-2 paragraphs)", "Medium (3-5 paragraphs)", "Long (detailed explanation)"] )
 
+
+# PromptTemplate = reusable template for creating dynamic prompts
+# {paper_input}, {style_input}, {length_input} are dynamic variables
 template = PromptTemplate(
-    template="""
+   template="""
       Please summarize the research paper titled "{paper_input}" with the following specifications:
          Explanation Style: {style_input}  
          Explanation Length: {length_input}  
@@ -27,10 +33,17 @@ template = PromptTemplate(
       If certain information is not available in the paper, respond with: "Insufficient information available" instead of guessing.  
       Ensure the summary is clear, accurate, and aligned with the provided style and length.
     """,
-    input_variables=['paper_input', 'style_input','length_input'],
-    validate_template=True
+
+   # Variables that will be replaced with actual user input
+   input_variables=['paper_input', 'style_input','length_input'],
+
+   # Validates that template variables match input_variables
+   validate_template=True
 )
 
+
+# invoke() fills the PromptTemplate variables with actual values
+# Creates the final dynamic prompt
 prompt = template.invoke({
    'paper_input': paper_input,
    'style_input':style_input,
@@ -39,5 +52,5 @@ prompt = template.invoke({
 
 
 if st.button("Explain"):
-   response = model.invoke(prompt)
+   response = model.invoke(prompt)  # Send the generated prompt to the Chat Model
    st.write(response.content)
